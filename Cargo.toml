@@ -1,0 +1,12 @@
+[package]
+name = "average_exclude_min_max"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+rayon="*"
+diam={git="https://github.com/wagnerf42/diam", branch="main"}
+rand="*"
+itertools="*"
