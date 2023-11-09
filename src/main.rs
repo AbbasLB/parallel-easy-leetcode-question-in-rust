@@ -43,15 +43,27 @@ pub fn average_exclude_min_max_parallel_inner(salary: &[i32]) -> (i64,i32,i32) {
     }
 }
 
-const ARRAY_SIZE: usize = 1_000_000;
-const THREADS_COUNT: usize = 8;
-
 fn main() {
-    let v: Vec<i32> = std::iter::repeat_with(rand::random).take(ARRAY_SIZE).collect();
-    rayon::ThreadPoolBuilder::new().num_threads(THREADS_COUNT).build_global().unwrap();
-    main_performance(v)
+    let args: Vec<String> = std::env::args().collect();
+    let mut array_size : usize = 1_00_000_000;
+    let mut threads_count : usize = 8;
+    if args.len()>1
+    {
+        array_size = args[1].parse().unwrap();
+    }
+    if args.len()>2
+    {
+        threads_count = args[2].parse().unwrap();
+    }
+    
+    let v: Vec<i32> = std::iter::repeat_with(rand::random).take(array_size).collect();
+    rayon::ThreadPoolBuilder::new().num_threads(threads_count).build_global().unwrap();
+
+    main_performance_readable(v)
 }
-fn main_performance(v: Vec<i32>) {
+
+#[allow(dead_code)]
+fn main_performance_readable(v: Vec<i32>) {
 
     let start = std::time::Instant::now();
     let res_seq = average_exclude_min_max_seq(&v);
@@ -62,6 +74,22 @@ fn main_performance(v: Vec<i32>) {
     println!("The parallel value is {:?} took {:?}",res_parallel, start.elapsed());
 }
 
+#[allow(dead_code)]
+fn main_performance_for_script(v: Vec<i32>) {
+
+    let start = std::time::Instant::now();
+    let res_seq = average_exclude_min_max_seq(&v);
+    println!("{:?}", start.elapsed().as_nanos());
+
+    let start = std::time::Instant::now();
+    let res_parallel = average_exclude_min_max_parallel(&v);
+    println!("{:?}", start.elapsed().as_nanos());
+
+    //Use the variables to prevent compiler optimization
+    println!("{}",res_parallel-res_seq);
+}
+
+#[allow(dead_code)]
 fn main_svg(v: Vec<i32>) {
 
     let res_seq = average_exclude_min_max_seq(&v);
